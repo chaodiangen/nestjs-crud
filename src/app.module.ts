@@ -6,12 +6,12 @@ import * as Joi from 'joi';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { LogsModule } from './logs/logs.module';
-import { RolesModule } from './roles/roles.module';
 
 import { connectionParams } from '../ormconfig';
 import { AuthModule } from './auth/auth.module';
 import { AdminGuard } from './guards/admin.guard';
 import { APP_GUARD } from '@nestjs/core';
+import { RolesModule } from './roles/roles.module';
 
 const envFilePath = `.env.${process.env.NODE_ENV || `development`}`;
 

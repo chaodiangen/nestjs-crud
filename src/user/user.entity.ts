@@ -1,4 +1,5 @@
 import { Exclude } from 'class-transformer';
+import { Roles } from 'src/roles/role.entity';
 import {
   Column,
   Entity,
@@ -11,7 +12,6 @@ import {
   AfterRemove,
 } from 'typeorm';
 import { Logs } from '../logs/logs.entity';
-import { Roles } from '../roles/roles.entity';
 import { Profile } from './profile.entity';
 
 @Entity()

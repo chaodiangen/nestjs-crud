@@ -5,8 +5,8 @@ import { User } from './user.entity';
 import { Logs } from '../logs/logs.entity';
 import { getUserDto } from './dto/get-user.dto';
 import { conditionUtils } from 'src/utils/db.helper';
-import { Roles } from '../roles/roles.entity';
 import * as argon2 from 'argon2';
+import { Roles } from 'src/roles/role.entity';
 
 @Injectable()
 export class UserService {
