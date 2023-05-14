@@ -32,7 +32,6 @@ export class LogsController {
   // @UseInterceptors(new SerializeInterceptor(PubLicLogsDto))
   @Serialize(PubLicLogsDto)
   postTest(@Body() dto: LogsDto) {
-    console.log(dto);
     return dto;
   }
 }

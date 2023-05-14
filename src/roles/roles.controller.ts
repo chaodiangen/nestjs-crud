@@ -6,19 +6,19 @@ import {
   Patch,
   Param,
   Delete,
-  UseFilters,
   UseGuards,
 } from '@nestjs/common';
 import { RolesService } from './roles.service';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
-import { TypeormFilter } from 'src/filters/typeorm.filter';
+import { Roles } from 'src/decorators/roles.decorator';
+import { Role } from 'src/enum/roles.enum';
+import { RoleGuard } from 'src/guards/role.guard';
 import { JwtGuard } from 'src/guards/jwt.guard';
 
 @Controller('roles')
-@UseFilters(new TypeormFilter())
-// @UseGuards(AuthGuard('jwt'))
-@UseGuards(JwtGuard)
+@Roles(Role.Admin)
+@UseGuards(JwtGuard, RoleGuard)
 export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
 
@@ -28,6 +28,7 @@ export class RolesController {
   }
 
   @Get()
+  // @Roles(Role.User)
   findAll() {
     return this.rolesService.findAll();
   }

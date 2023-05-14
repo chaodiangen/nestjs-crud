@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsString, Length } from 'class-validator';
-import { Roles } from 'src/roles/role.entity';
+import { Roles } from 'src/roles/roles.entity';
 
 export class createUserDto {
   @IsString()

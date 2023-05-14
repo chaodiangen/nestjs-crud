@@ -71,3 +71,15 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](LICENSE).
+
+## 快速创建crud
+1. nest g res menus  --no-spec
+2. 
+
+
+## 组件详解
+`migration:create` 用法 npm run migration:create src/migrations/init
+当前数据库文件记录下来 创建版本库  系统不断的更新，数据库不断更新，我们需要记录数据库版本
+ 使用步骤：
+ 1. nest g res menus  --no-spec 创建完并且更改了 entity 表之后
+ 2. 使用命令 npm run  migration:generate menus  `menus 英语加中线`

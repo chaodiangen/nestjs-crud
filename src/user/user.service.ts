@@ -3,10 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { User } from './user.entity';
 import { Logs } from '../logs/logs.entity';
+import { Roles } from 'src/roles/roles.entity';
 import { getUserDto } from './dto/get-user.dto';
 import { conditionUtils } from 'src/utils/db.helper';
 import * as argon2 from 'argon2';
-import { Roles } from 'src/roles/role.entity';
 
 @Injectable()
 export class UserService {
@@ -60,7 +60,6 @@ export class UserService {
       .innerJoinAndSelect('user.roles', 'roles');
 
     const newQuery = conditionUtils<User>(queryBuilder, obj);
-
     // queryBuilder.andWhere(username ? 'user.username = :username' : '1=1', {
     //   username,
     // });

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
-import { Roles } from './role.entity';
+import { Roles } from './roles.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -35,6 +35,7 @@ export class RolesService {
   }
 
   remove(id: number) {
+    // delete  -> AfterRemove 不会触发
     return this.roleRepository.delete(id);
   }
 }
