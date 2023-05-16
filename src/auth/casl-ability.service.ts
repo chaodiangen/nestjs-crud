@@ -41,7 +41,7 @@ export class CaslAbilityService {
     // can('manage', 'all');
 
     const ability = build({
-      detectSubjectType: (object) => object.constructor,
+      detectSubjectType: (object) => object.constructor(),
     });
 
     // ability.can
