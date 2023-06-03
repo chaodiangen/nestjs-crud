@@ -57,29 +57,35 @@ $ npm run test:e2e
 # test coverage
 $ npm run test:cov
 ```
+### 项目概述
+本项目使用 NestJS 框架创建，主要用于管理 Web 应用程序。该项目包括用户、角色、菜单和日志的增删改查功能，使用 MySQL 数据库存储数据，Node.js 版本为 v16。
 
-## Support
+## 功能模块
+### 用户模块
+该模块主要负责管理用户数据，包括用户的增删改查功能。具体功能如下:
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+用户注册：用户可以注册新账号。
+用户登录：用户可以登录到应用程序。
+用户信息：可以查看用户信息，包括用户名、密码、邮箱、电话号码等。
+用户编辑：可以编辑用户信息，包括用户名、密码、邮箱、电话号码等。
+用户删除：可以删除用户数据。
+### 角色模块
+该模块主要负责管理角色数据，包括角色的增删改查功能。具体功能如下:
 
-## Stay in touch
+角色添加：可以添加新的角色。
+角色删除：可以删除角色数据。
+角色修改：可以修改角色信息，包括名称、描述、权限等。
+### 菜单模块
+该模块主要负责管理菜单数据，包括菜单的增删改查功能。具体功能如下:
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+菜单添加：可以添加新菜单。
+菜单删除：可以删除菜单数据。
+菜单修改：可以修改菜单信息，包括名称、图标、路径等。
+### 日志模块
+该模块主要负责管理日志数据，包括日志的增删改查功能。具体功能如下:
 
-## License
-
-Nest is [MIT licensed](LICENSE).
-
-## 快速创建crud
-1. nest g res menus  --no-spec
-2. 
-
-
-## 组件详解
-`migration:create` 用法 npm run migration:create src/migrations/init
-当前数据库文件记录下来 创建版本库  系统不断的更新，数据库不断更新，我们需要记录数据库版本
- 使用步骤：
- 1. nest g res menus  --no-spec 创建完并且更改了 entity 表之后
- 2. 使用命令 npm run  migration:generate menus  `menus 英语加中线`
+日志添加：可以添加新日志。
+日志删除：可以删除日志数据。
+日志修改：可以修改日志信息，包括日期、内容、用户等信息。
+### 数据库设计
+在 `migrations/init.sql`
