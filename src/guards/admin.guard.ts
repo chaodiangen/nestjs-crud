@@ -1,4 +1,5 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+// import { Observable } from 'rxjs';
 import { UserService } from 'src/user/user.service';
 import { User } from 'src/user/user.entity';
 
@@ -14,11 +15,11 @@ export class AdminGuard implements CanActivate {
     const user = (await this.userService.find(req.user.username)) as User;
     // console.log(
     //   '🚀 ~ file: admin.guard.ts ~ line 16 ~ AdminGuard ~ canActivate ~ user',
-    //   user.roles,
+    //   user,
     // );
-    // 普通用户 暂时使用 普通用户登录
+    // 普通用户
     // 后面加入更多的逻辑
-    if (user && user.roles.filter((o) => o.id === 2 || o.id === 1).length > 0) {
+    if (user && user.roles.filter((o) => o.id === 1).length > 0) {
       return true;
     }
     return false;

@@ -1,8 +1,8 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { User } from './user.entity';
-import { Logs } from '../logs/logs.entity';
+import { Logs } from 'src/logs/logs.entity';
 import { Roles } from 'src/roles/roles.entity';
 import { getUserDto } from './dto/get-user.dto';
 import { conditionUtils } from 'src/utils/db.helper';
@@ -20,10 +20,10 @@ export class UserService {
   findAll(query: getUserDto) {
     const { limit, page, username, gender, role } = query;
     const take = limit || 10;
-    const skip = ((page * 1 || 1) - 1) * take;
-    // 查询方法
-    // 原生 sql 写法
-    // 联合插叙
+    const skip = ((page || 1) - 1) * take;
+    // SELECT * FROM user u, profile p, role r WHERE u.id = p.uid AND u.id = r.uid AND ....
+    // SELECT * FROM user u LEFT JOIN profile p ON u.id = p.uid LEFT JOIN role r ON u.id = r.uid WHERE ....
+    // 分页 SQL -> LIMIT 10 OFFSET 10
     // return this.userRepository.find({
     //   select: {
     //     id: true,
@@ -36,7 +36,7 @@ export class UserService {
     //     profile: true,
     //     roles: true,
     //   },
-    //   where: {
+    //   where: { // AND OR
     //     username,
     //     profile: {
     //       gender,
@@ -53,31 +53,12 @@ export class UserService {
       'profile.gender': gender,
       'roles.id': role,
     };
-    // inner join vs left join vs outer join 区别
+    // inner join vs left join vs outer join
     const queryBuilder = this.userRepository
       .createQueryBuilder('user')
-      .innerJoinAndSelect('user.profile', 'profile')
-      .innerJoinAndSelect('user.roles', 'roles');
-
+      .leftJoinAndSelect('user.profile', 'profile')
+      .leftJoinAndSelect('user.roles', 'roles');
     const newQuery = conditionUtils<User>(queryBuilder, obj);
-    // queryBuilder.andWhere(username ? 'user.username = :username' : '1=1', {
-    //   username,
-    // });
-    // const obj = {
-    //   'profile.gender': gender,
-    //   'roles.id': role,
-    // };
-    // Object.keys(obj).forEach((key) => {
-    //   if (obj[key]) {
-    //     queryBuilder.andWhere(`${key} = :${key}`, { [key]: obj[key] });
-    //   }
-    // });
-
-    // if (username) {
-    //   queryBuilder.where('user.username = :username', { username });
-    // } else {
-    //   queryBuilder.where('user.username IS NOT NULL');
-    // }
     // if (gender) {
     //   queryBuilder.andWhere('profile.gender = :gender', { gender });
     // } else {
@@ -88,7 +69,14 @@ export class UserService {
     // } else {
     //   queryBuilder.andWhere('roles.id IS NOT NULL');
     // }
-    return newQuery.take(take).skip(skip).getMany();
+    return (
+      newQuery
+        .take(take)
+        .skip(skip)
+        // .andWhere('profile.gender = :gender', { gender })
+        // .andWhere('roles.id = :role', { role })
+        .getMany()
+    );
   }
 
   find(username: string) {
@@ -103,16 +91,13 @@ export class UserService {
   }
 
   async create(user: Partial<User>) {
-    // 配置默认角色
     if (!user.roles) {
-      const role = await this.rolesRepository.findOne({
-        where: {
-          id: 2,
-        },
-      });
+      const role = await this.rolesRepository.findOne({ where: { id: 2 } });
       user.roles = [role];
     }
     if (user.roles instanceof Array && typeof user.roles[0] === 'number') {
+      // {id, name} -> { id } -> [id]
+      // 查询所有的用户角色
       user.roles = await this.rolesRepository.find({
         where: {
           id: In(user.roles),
@@ -120,30 +105,34 @@ export class UserService {
       });
     }
     const userTmp = await this.userRepository.create(user);
-    // 用户密码加密
-    userTmp.password = await argon2.hash(userTmp.password);
-    return await this.userRepository.save(userTmp);
-    // const userTmp = await this.userRepository.create(user);
     // try {
-    //   const res = await this.userRepository.save(userTmp);
-    //   return res;
+    // 对用户密码使用argon2加密
+    userTmp.password = await argon2.hash(userTmp.password);
+    const res = await this.userRepository.save(userTmp);
+    return res;
     // } catch (error) {
-    //   if ((error.errno = 1062)) {
+    //   console.log(
+    //     '🚀 ~ file: user.service.ts ~ line 93 ~ UserService ~ create ~ error',
+    //     error,
+    //   );
+    //   if (error.errno && error.errno === 1062) {
     //     throw new HttpException(error.sqlMessage, 500);
     //   }
     // }
   }
 
-  async update(id: number, user: Partial<User>) {
-    // 下面的update 方法 只适合单模型的更新，不适合有关系的模型
-    // return this.userRepository.update(id, user);
-    const userTemp = await this.findProfile(id);
-    const newUser = await this.userRepository.merge(userTemp, user);
-    // 联合模型更新
+  async update(id: any, user: Partial<User>) {
+    const userTemp = await this.findProfile(parseInt(id));
+    const newUser = this.userRepository.merge(userTemp, user);
+    // 联合模型更新，需要使用save方法或者queryBuilder
     return this.userRepository.save(newUser);
+
+    // 下面的update方法，只适合单模型的更新，不适合有关系的模型更新
+    // return this.userRepository.update(parseInt(id), newUser);
   }
 
   async remove(id: number) {
+    // return this.userRepository.delete(id);
     const user = await this.findOne(id);
     return this.userRepository.remove(user);
   }
@@ -186,7 +175,7 @@ export class UserService {
         .groupBy('logs.result')
         .orderBy('count', 'DESC')
         .addOrderBy('result', 'DESC')
-        .offset(1)
+        .offset(2)
         .limit(3)
         // .orderBy('result', 'DESC')
         .getRawMany()

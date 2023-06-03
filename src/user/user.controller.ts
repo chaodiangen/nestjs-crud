@@ -26,6 +26,8 @@ import { CreateUserPipe } from './pipes/create-user/create-user.pipe';
 import { createUserDto } from './dto/create-user.dto';
 import { JwtGuard } from 'src/guards/jwt.guard';
 import { AdminGuard } from 'src/guards/admin.guard';
+import { Serialize } from 'src/decorators/serialize.decorator';
+import { PublicUserDto } from './dto/public-user.dto';
 // import { AuthGuard } from '@nestjs/passport';
 
 @Controller('user')
@@ -46,6 +48,7 @@ export class UserController {
 
   @Get()
   @UseGuards(AdminGuard)
+  @Serialize(PublicUserDto)
   getUsers(@Query() query: getUserDto): any {
     // page limit condition-查询条件
     // 前端传过来的query参数全部是string

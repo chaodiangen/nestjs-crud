@@ -7,13 +7,18 @@
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { getServerConfig } from 'ormconfig';
 import { AppModule } from './app.module';
 import { AllExceptionFilter } from './filters/all-exception.filter';
+
+const config = getServerConfig();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     // 关闭整个nestjs日志
-    // logger: false,
+    logger: false,
+    // 允许跨域
+    cors: true,
     // logger: ['error', 'warn'],
   });
   app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
@@ -30,8 +35,10 @@ async function bootstrap() {
   );
   // 弊端 无法使用DI
   // app.useGlobalGuards()
-
-  const port = 3000;
+  const port =
+    typeof config['APP_PORT'] === 'string'
+      ? parseInt(config['APP_PORT'])
+      : 3000;
   await app.listen(port);
 }
 bootstrap();
